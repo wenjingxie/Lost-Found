@@ -1,0 +1,133 @@
+<!doctype html>
+{% autoescape true %}
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <link href="http://getbootstrap.com/examples/navbar-fixed-top/navbar-fixed-top.css" rel="stylesheet">
+  </head>
+<body>
+<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+<div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="/">Lost and Found</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li><a href="/post/lost">Report Lost</a></li>
+        <li><a href="/post/found">Report Found</a></li>
+        <li><a href="/search/lost">Search Lost</a></li>
+        <li><a href="/search/found">Search Found</a></li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href={{signUrl}}>{{signInOut}} </a></li>
+        <li><a href={{myUrl}}>{{myPost}}</a></li>
+      </ul>
+     </div>   
+</div>
+</nav>
+
+<div class='container'>
+<div class='row'>
+  <div class="col-sm-4">
+  <h3> Search for the {{title}} item </h3>
+  <form role='form'>
+    <div class='form-group'>
+      <label for='category'> Category</label>
+      <select tabindex="20" class='form-control' name="category" id="category" style="width:250px;">
+           <option value="">Choose a Category</option>
+           <option  value="Animals / Pets">Animals / Pets </option>
+           <option  value="Bags, Baggage, Luggage">Bags, Baggage, Luggage </option>
+           <option  value="Clothing">Clothing </option>
+           <option  value="Collectors Items">Collectors Items </option>
+           <option  value="Currency / Money">Currency / Money </option>
+           <option  value="Electronics">Electronics </option>
+           <option  value="Household/Tools">Household/Tools </option>
+           <option  value="Jewelry">Jewelry </option>
+           <option  value="Literature">Literature </option>
+           <option  value="Mail/Parcel">Mail/Parcel  </option>
+           <option  value="Media">Media </option>
+           <option  value="Medical">Medical </option>
+           <option  value="Musical Equipment">Musical Equipment </option>
+           <option  value="Personal Accessories">Personal Accessories </option>
+           <option  value="Sporting Goods">Sporting Goods </option>
+           <option  value="Tickets">Tickets </option>
+           <option  value="Toys">Toys </option>
+           <option  value="Transportation">Transportation </option>
+           <option  value="Visual Art Related">Visual Art Related </option>
+    </select>
+  </div>
+
+  <div class='form-group'>
+    <label for='keyword'>Keyword</label>
+    <input type="text" name='keyword' id="keyword" class='form-control' style="width:250px;">
+  </div>
+
+  <div class='form-group'>
+  	<input type="button"  name='button' id="button"value="Search" class='btn btn-lg btn-primary btn-block' style="width:250px;">
+  </div>
+</form>
+</div>
+
+<div class="col-sm-8">
+<div id="result" >
+</div>
+</div>
+</div>
+</div>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.2/themes/smoothness/jquery-ui.css">
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+	$("#button").click(function(event){
+
+		var keyword = $("#keyword").val();
+		var cate = $("#category").val();
+    var result = false;
+		if(keyword == "" && cate == "") {
+			  alert("Please fill at least one field to search!");
+		}
+		else {
+      $('#result').empty();
+
+      $.post('{{url}}',{'keyword':keyword,'cate':cate},function(jsons){
+        if (jsons.length == 0) {
+          $('#result').append('<h3 class="text-center"> No result!</h3>');
+        }
+        else{
+             result = true;
+            $('#result').append('<div id="accordion"></div>');
+            $.each(jsons, function(i, json){
+            $('#accordion').append('<h4><div class="row"><div class="col-sm-4">['+json.cate+']</div><div class="col-sm-4">'+json.title+'</div><div class="col-sm-4">Contact: '+json.email+'</div></div></h4>');
+            $('#accordion').append('<div><div class="row"><div class="col-sm-3">'+json.date+'</div><div class="col-sm-9">'+json.addr+'</div></div><div class="row"><div class="col-sm-9"><p>' + json.desc +'</p></div>'+'<div class="col-sm-3"><img class="img-rounded" src="'+json.img+'" style="width:100px;height:100px"></div></div></div>');
+
+        })
+        }
+
+
+      },"json").done(function(){
+        if (result){
+           $( "#accordion" ).accordion();
+        }
+
+      });	
+      
+		}
+
+	})
+})
+</script>
+</body>
+</html>
+{% endautoescape %}

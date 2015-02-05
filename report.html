@@ -1,0 +1,140 @@
+<!doctype html>
+{% autoescape true %}
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <link href="http://getbootstrap.com/examples/navbar-fixed-top/navbar-fixed-top.css" rel="stylesheet">
+  </head>
+<body>
+<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+<div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="/">Lost and Found</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li><a href="/post/lost">Report Lost</a></li>
+        <li><a href="/post/found">Report Found</a></li>
+        <li><a href="/search/lost">Search Lost</a></li>
+        <li><a href="/search/found">Search Found</a></li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href='/signOut'>Sign Out </a></li>
+        <li><a href={{myUrl}}>{{myPost}}</a></li>
+      </ul>
+     </div>   
+</div>
+</nav>
+<div class='container'>
+  <h3> Report a Lost Item </h3>
+  <form id='form' action={{action}} method="POST" enctype="multipart/form-data" role='form'>
+  <div class='form-group'>
+    <label for='date'> {{date}} </label>
+    <input type="date" class='form-control' width="40%" name="date" id="date" style="width:250px;">
+  </div>
+
+  <div class='form-group'>
+    <label for='category'> Category</label>
+    <select tabindex="20" class='form-control'name="category" id="category" style="width:250px;">
+           <option value="">Choose a Category</option>
+           <option  value="Animals / Pets">Animals / Pets </option>
+           <option  value="Bags, Baggage, Luggage">Bags, Baggage, Luggage </option>
+           <option  value="Clothing">Clothing </option>
+           <option  value="Collectors Items">Collectors Items </option>
+           <option  value="Currency / Money">Currency / Money </option>
+           <option  value="Electronics">Electronics </option>
+           <option  value="Household/Tools">Household/Tools </option>
+           <option  value="Jewelry">Jewelry </option>
+           <option  value="Literature">Literature </option>
+           <option  value="Mail/Parcel">Mail/Parcel  </option>
+           <option  value="Media">Media </option>
+           <option  value="Medical">Medical </option>
+           <option  value="Musical Equipment">Musical Equipment </option>
+           <option  value="Personal Accessories">Personal Accessories </option>
+           <option  value="Sporting Goods">Sporting Goods </option>
+           <option  value="Tickets">Tickets </option>
+           <option  value="Toys">Toys </option>
+           <option  value="Transportation">Transportation </option>
+           <option  value="Visual Art Related">Visual Art Related </option>
+    </select>
+  </div>
+
+  <div class='form-group'>
+    <label for='title'>Title(Short, generic description - example: "Large Black Lab" or "Smart Phone")</label>
+    <input class='form-control' type="text" name='title' id="title" style="width:250px;">
+  </div>
+
+  <div class='form-group'>
+    <label for='description'>Description(Detailed Description: Name, Size, Weight, Type, Contents)</label>
+    <textarea id="description" name='description' rows="5" cols="40" class='form-control' style="width:500px;"></textarea>
+  </div>
+
+  <div class='form-group'>
+    <label for='address'>{{loc}}(example:1600 Amphitheatre Pkwy, Mountain View, CA 94043, USA)</label>
+    <input class='form-control' type='text' name='address' id="address" size=80 style="width:500px;">
+  </div>
+
+  <div class='form-group'>
+    <label for='file'>Upload an Image</label>
+    <input type="file" name='file' id="file" class='form-control' style="width:250px;">
+  </div>
+    <input type="hidden" name="location" id='location' value="test">
+  <div class='form-group'>
+  	<input type="button"  name='button' id="button"value="Post" class='btn btn-lg btn-primary btn-block' style="width:250px;">
+  </div>
+</form>
+</div>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="https://maps.googleapis.com/maps/api/js?v=3.exp"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+	console.log("url"+$("#form").attr('action'));
+	$("#button").click(function(event){
+		var date = $("#date").val();
+		var cate = $("#category").val();
+		var title = $("#title").val();
+		var des = $("#description").val();
+		var address = $("#address").val();
+		var file = $("#file").val();
+		var geocoder = new google.maps.Geocoder();
+		console.log("dada" + $("#form").serialize());
+		if(date == "" || cate == "" || title == "" || des == "" || address == "") {
+			  alert("Please fill the necessary fields!");
+			  event.preventDefault();
+		}
+		else {
+			geocoder.geocode( { 'address': address}, function(results, status) {
+    		if (status == google.maps.GeocoderStatus.OK) {
+    			console.log("right!!!!!!!!");
+    			$('#location').val(results[0].geometry.location);
+    			$('#address').val(results[0].formatted_address);
+    			alert("ass"+results[0].formatted_address);
+    			alert("loc"+$('#location').val());
+    			$('#form').submit();
+    			//return true;
+     				
+    		} 
+    		else {
+      			alert('Geocode was not successful for the following reason: ' + status);
+      			event.preventDefault();
+    		}
+  		});
+		}
+
+	})
+})
+</script>
+</body>
+</html>
+{% endautoescape %}
